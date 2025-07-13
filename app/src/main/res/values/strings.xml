@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">TestSuitmedia</string>
+    <string name="next">NEXT</string>
+    <string name="check">CHECK</string>
+    <string name="polindrome">Polindrome</string>
+    <string name="name">Name</string>
+    <string name="profile_picture">profile picture</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="welcome">Welcome</string>
+    <string name="jhon_doe">Jhon Doe</string>
+    <string name="selected_user_name">Selected User Name</string>
+    <string name="choose_a_user">Choose a User</string>
+</resources>
