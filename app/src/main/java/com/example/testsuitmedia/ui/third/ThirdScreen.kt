@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.testsuitmedia.R
 import com.example.testsuitmedia.databinding.FragmentThirdScreenBinding
 
 class ThirdScreen : Fragment() {
@@ -32,12 +36,30 @@ class ThirdScreen : Fragment() {
 
         setupRecyclerView()
         observeViewModel()
+        sendDataToSecondScreen()
 
-        viewModel.loadNextPage()
-
-        binding.swipeRefresh.setOnRefreshListener {
-            viewModel.refresh()
+        viewModel.loadPage()
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
         }
+    }
+
+    private fun sendDataToSecondScreen() {
+        val toolbar = binding.toolbar
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+        setHasOptionsMenu(true)
+
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val backIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_arrow_back)
+        backIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.black))
+        (requireActivity() as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(backIcon)
+
+        toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        toolbar.title = getString(R.string.third_screen)
     }
 
     private fun setupRecyclerView() {
@@ -52,22 +74,11 @@ class ThirdScreen : Fragment() {
 
         binding.rvUser.layoutManager = LinearLayoutManager(requireContext())
         binding.rvUser.adapter = adapter
-
-        binding.rvUser.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
-                val layoutManager = rv.layoutManager as LinearLayoutManager
-                val lastItem = layoutManager.findLastVisibleItemPosition()
-                if (lastItem == adapter.itemCount - 1) {
-                    viewModel.loadNextPage()
-                }
-            }
-        })
     }
 
     private fun observeViewModel() {
         viewModel.users.observe(viewLifecycleOwner) {
             adapter.submitList(it.toList())
-            binding.swipeRefresh.isRefreshing = false
         }
     }
 

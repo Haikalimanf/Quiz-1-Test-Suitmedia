@@ -16,15 +16,19 @@ class ThirdViewModel : ViewModel() {
     private val _users = MutableLiveData<List<DataItem>>()
     val users: LiveData<List<DataItem>> = _users
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     private val currentList = mutableListOf<DataItem>()
     private var currentPage = 1
     private val perPage = 10
-    private var isLoading = false
+    private var isLoadingInternal = false
     private var isLastPage = false
 
-    fun loadNextPage() {
-        if (isLoading || isLastPage) return
-        isLoading = true
+    fun loadPage() {
+        if (isLoadingInternal || isLastPage) return
+        isLoadingInternal = true
+        _isLoading.postValue(true)
 
         viewModelScope.launch {
             try {
@@ -32,23 +36,16 @@ class ThirdViewModel : ViewModel() {
                 if (response.isNotEmpty()) {
                     currentList.addAll(response)
                     _users.postValue(currentList)
-                    currentPage++
                 } else {
                     isLastPage = true
                 }
             } catch (e: Exception) {
                 Log.e("ThirdViewModel", "Error: ${e.message}")
             } finally {
-                isLoading = false
+                isLoadingInternal = false
+                _isLoading.postValue(false)
             }
         }
     }
-
-    fun refresh() {
-        currentPage = 1
-        isLastPage = false
-        currentList.clear()
-        _users.postValue(emptyList())
-        loadNextPage()
-    }
 }
+

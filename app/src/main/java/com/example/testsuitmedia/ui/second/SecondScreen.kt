@@ -5,6 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.example.testsuitmedia.R
 import com.example.testsuitmedia.databinding.FragmentSecondScreenBinding
@@ -26,12 +29,34 @@ class SecondScreen : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setToolbar()
         getDataFromFirstScreen()
         navigateToThirdScreen()
+        sendDataToSecondScreen()
+    }
 
+    private fun sendDataToSecondScreen() {
         parentFragmentManager.setFragmentResultListener("selected_user", viewLifecycleOwner) { _, bundle ->
             val selectedName = bundle.getString("username")
             binding.txtSelectedUsername.text = selectedName
+        }
+    }
+
+    private fun setToolbar() {
+        val toolbar = binding.toolbar
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+        setHasOptionsMenu(true)
+
+        val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val backIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_arrow_back)
+        backIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.blue_arrow))
+        actionBar?.setHomeAsUpIndicator(backIcon)
+
+        toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
         }
     }
 
@@ -40,12 +65,6 @@ class SecondScreen : Fragment() {
             val navController = findNavController()
             navController.navigate(R.id.action_secondScreen_to_thirdScreen)
         }
-    }
-
-    private fun getDataFromThirdScreen() {
-        val username = arguments?.getString(USERNAME)
-            ?: getString(R.string.selected_user_name)
-        binding.txtSelectedUsername.text = username
     }
 
     private fun getDataFromFirstScreen() {
@@ -63,6 +82,5 @@ class SecondScreen : Fragment() {
         const val NAME = "name"
         const val USERNAME = "username"
     }
-
 
 }
