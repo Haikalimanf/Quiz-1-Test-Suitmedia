@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.example.testsuitmedia.R
 import com.example.testsuitmedia.databinding.FragmentSecondScreenBinding
 
@@ -26,7 +27,19 @@ class SecondScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getDataFromFirstScreen()
-        getDataFromThirdScreen()
+        navigateToThirdScreen()
+
+        parentFragmentManager.setFragmentResultListener("selected_user", viewLifecycleOwner) { _, bundle ->
+            val selectedName = bundle.getString("username")
+            binding.txtSelectedUsername.text = selectedName
+        }
+    }
+
+    private fun navigateToThirdScreen() {
+        binding.btnChooseUser.setOnClickListener {
+            val navController = findNavController()
+            navController.navigate(R.id.action_secondScreen_to_thirdScreen)
+        }
     }
 
     private fun getDataFromThirdScreen() {

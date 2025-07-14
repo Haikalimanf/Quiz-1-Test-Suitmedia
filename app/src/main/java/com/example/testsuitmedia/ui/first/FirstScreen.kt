@@ -1,6 +1,7 @@
 package com.example.testsuitmedia.ui.first
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +34,7 @@ class FirstScreen : Fragment() {
 
     private fun nextScreen() {
         binding.btnNext.setOnClickListener {
+            Log.d("NavCheck", "Navigating from FirstScreen to SecondScreen")
             val name = binding.edtUsername.text.toString().trim()
             if (name.isNotEmpty()) {
                 val bundle = Bundle().apply {
